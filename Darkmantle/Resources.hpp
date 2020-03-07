@@ -2,12 +2,23 @@
 // Resources.hpp
 // Pathal
 //
+// Contains a long selection of enums, constants, and basic structures
+// used across all other files. They have been condensed here to reduce file
+// space and include statements.
+//
 
 #pragma once
 
 #include <stdio.h>
 #include <vector>
 #include <iostream>
+
+#include "DamageBreakdown.hpp"
+
+// level 120 stat conversion rates
+#define CRIT_CONVERT  72.0*100
+#define HASTE_CONVERT 68.0*100
+#define VERSA_CONVERT 85.0*100
 
 enum ResourceTypes {
     PRIMARY_RESOURCE,
@@ -43,120 +54,45 @@ enum DamageTypes {
     // all combined
     DAMAGE_CHAOS        = DAMAGE_PHYSICAL | DAMAGE_HOLY | DAMAGE_FIRE | DAMAGE_NATURE | DAMAGE_FROST | DAMAGE_SHADOW | DAMAGE_ARCANE
 };
-const int NUMBER_OF_BASE_DAMAGE_TYPES = 7; //12 combined
+const int NUMBER_OF_BASE_DAMAGE_TYPES = 7; // + 12 combined
 
 enum Actions {
     ACT_MH_ATTACK,
 	ACT_OH_ATTACK,
+	ACT_MUTILATE,
+	ACT_ENVENOM,
+	ACT_RUPTURE,
+	ACT_VENDETTA,
+	
+	ACT_SINISTER_STRIKE,
     NUMBER_OF_ACTIONS
 };
 
+enum AuraAction {
+	AURA_EMPTY,
+	AURA_ADD,
+	AURA_EXPIRE,
+	AURA_REFRESH,
+	NUMBER_OF_AURA_ACTIONS
+};
 
-class TimelineEvent {
+
+
+union values {
+	float   f_remaining;
+	int     i_remaining;
+	AuraAction action;
+};
+
+
+
+struct TimelineEvent {
 public:
     float time;
     Actions act;
     TimelineEvent* next;
     
-    union vals {
-        float   f_remaining;
-        int     i_remaining;
-    } value;
-};
-
-class DamageBreakdown {
-public:
-    std::vector<float> damages;
-    float total_damage;
-    
-    bool SetSize(int size) {
-        damages.reserve(size);
-        if(damages.capacity() != size) {
-            return false;   // The memory allocation failed!
-        }
-        return true;
-    }
-    
-    void CopyTo(DamageBreakdown& d) {
-        d.damages = damages;
-        d.total_damage = total_damage;
-    }
-    
-    void AddDamage(float val, int action) {
-        damages.at(action) += val;
-        total_damage += val;
-    }
-    
-    void ResetBreakdown() {
-        for(int i = 0; i < damages.size(); i++) {
-            damages.at(i) = 0;
-        }
-		for(int i = 0; i < NUMBER_OF_ACTIONS; i++) {
-			damages.push_back(0);
-		}
-        total_damage = 0;
-    }
-    
-    DamageBreakdown() {
-        DamageBreakdown((int)NUMBER_OF_ACTIONS);
-    }
-    
-    DamageBreakdown(int size) {
-        SetSize(size);
-    }
-    
-    ~DamageBreakdown() {
-        //
-    }
-};
-
-struct EventState {
-	//state related
-	double time;
-    DamageBreakdown breakdown;
-    TimelineEvent* timeline = nullptr;
-	float percentage;
-	
-	
-    // tree related
-	int current_child = 0;
-    std::vector<EventState*> children;
-	bool processed = false;
-    // TODO: Union?
-    EventState* parent = nullptr; // for navigating the tree
-    EventState* next = nullptr;   // for recycling
-};
-
-
-// -- Attack -- //
-
-class Attack {
-public:
-    float Modifier_AP, base_damage;
-    float duration;
-    
-    float GCD = 1.5;
-    
-    
-    virtual bool CanCast(EventState * event = nullptr);
-    
-    virtual bool ConsumeResources(EventState * event = nullptr);
-
-    virtual bool Execute(EventState * event = nullptr) = 0;
-};
-
-
-// -- MH_Attack -- //
-
-class MH_Attack : public Attack {
-    float GCD = 1.02f;
-    
-public:
-    bool Execute(EventState * event);
-};
-
-class OH_Attack : public Attack {
-	float GCD = 1.02f;
-public:
-	bool Execute(EventState * event);
+	// stores data for future processing, we union to save space
+	// ie, tle->value.action; or tle->value.f_remaining;
+	values value;
 };

@@ -1,0 +1,148 @@
+//
+// Talents.hpp
+// Pathal
+//
+
+#pragma once
+
+#include <vector>
+#include <map>
+
+
+class Talents {
+public:
+	virtual bool HasTalent() = 0;
+	virtual bool SetTalent() = 0;
+};
+
+class TalentsGrid : public Talents {
+public:
+	enum TalentsList {
+		TALENT_WEAPONMASTER	=		1 << 0,	// lvl 15
+		TALENT_QUICK_DRAW = 		1 << 1,
+		TALENT_GHOSTLY_STRIKE = 	1 << 2,
+		
+		TALENT_ACROBATIC_STRIKES =	1 << 3,	// lvl 30
+		TALENT_RETRACTIBLE_HOOK =	1 << 4,
+		TALENT_HIT_AND_RUN =		1 << 5,
+		
+		TALENT_VIGOR =				1 << 6,	// lvl 45
+		TALENT_DEEPER_STRATEGEM =	1 << 7,
+		TALENT_MARKED_FOR_DEATH =	1 << 8,
+		
+		TALENT_IRON_STOMACH =		1 << 9, // lvl 60
+		TALENT_CHEAT_DEATH =		1 << 10,
+		TALENT_ELUSIVENESS =		1 << 11,
+		
+		TALENT_DIRTY_TRICKS =		1 << 12,// lvl 75
+		TALENT_BLINDING_POWDER =	1 << 13,
+		TALENT_PREY_ON_THE_WEAK =	1 << 14,
+		
+		TALENT_LOADED_DICE =		1 << 15,// lvl 90
+		TALENT_ALACRITY =			1 << 16,
+		TALENT_SLICE_AND_DICE =		1 << 17,
+		
+		TALENT_DANCING_STEEL =		1 << 18,// lvl 100
+		TALENT_BLADE_RUSH =			1 << 29,
+		TALENT_KILLING_SPREE =		1 << 20,
+		
+		NUMBER_OF_GRID_TALENTS
+	};
+	
+protected:
+	int selected_talents;
+	
+public:
+	bool HasTalent(TalentsList item) {
+		// if the bitflag is true, this is non-zero
+		return item & selected_talents;
+	}
+	
+	// This allows multiple flags to be set at once, BE CAREFUL
+	void SetTalent(TalentsList item) {
+		selected_talents |= item;
+	}
+};
+
+
+
+
+
+class TalentsClassic : public Talents {
+public:
+	enum TalentsList {
+		TALENT_IMPROVED_EVISCERATE, // ASSASSINATION
+		TALENT_REMORSELESS_ATTACKS,
+		TALENT_MALICE,
+		TALENT_RUTHLESSNESS,
+		TALENT_MURDER,
+		TALENT_IMPROVED_SLICE_AND_DICE,
+		TALENT_RELENTLESS_STRIKES,
+		TALENT_IMPROVED_EXPOSE_ARMOR,
+		TALENT_LETHALITY,
+		TALENT_VILE_POISONS,
+		TALENT_IMPROVED_POISONS,
+		TALENT_COLD_BLOOD,
+		TALENT_IMPROVED_KIDNEY_SHOT,
+		TALENT_SEAL_FATE,
+		TALENT_VIGOR,
+		
+		TALENT_IMPROVED_GOUGE, // COMBAT
+		TALENT_IMPROVED_SINISTER_STRIKE,
+		TALENT_LIGHTNING_REFLEXES,
+		TALENT_IMPROVED_BACKSTAB,
+		TALENT_DEFLECTION,
+		TALENT_PRECISION,
+		TALENT_ENDURANCE,
+		TALENT_RIPOSTE,
+		TALENT_IMPROVED_SPRINT,
+		TALENT_IMPROVED_KICK,
+		TALENT_DAGGER_SPECIALIZATION,
+		TALENT_DUAL_WIELD_SPECIALIZATION,
+		TALENT_MACE_SPECIALIZATION,
+		TALENT_BLADE_FLURRY,
+		TALENT_SWORD_SPECIALIZATION,
+		TALENT_FIST_WEAPON_SPECIALIZATION,
+		TALENT_WEAPON_EXPERTISE,
+		TALENT_AGGRESSION,
+		TALENT_ADRENALINE_RUSH,
+		
+		TALENT_MASTER_OF_DECEPTION, // SUBTLETY
+		TALENT_OPPORTUNITY,
+		TALENT_SLEIGHT_OF_HAND,
+		TALENT_ELUSIVENES,
+		TALENT_CAMOFLAGE,
+		TALENT_INITIATIVE,
+		TALENT_GHOSTLY_STRIKE,
+		TALENT_IMPROVED_AMBUSH,
+		TALENT_SETUP,
+		TALENT_IMPROVED_SAP,
+		TALENT_SERRATED_BLADES,
+		TALENT_HEIGHTENED_SENSES,
+		TALENT_PREPARATION,
+		TALENT_DIRTY_DEEDS,
+		TALENT_HEMORRHAGE,
+		TALENT_DEADLINESS,
+		TALENT_PREMEDITATION,
+		NUMBER_OF_CLASSIC_TALENTS
+	};
+	
+protected:
+	int talent_amounts[NUMBER_OF_CLASSIC_TALENTS];
+	
+public:
+	bool HasTalent() {
+		return false;
+	}
+	
+	bool SetTalent() {
+		return false;
+	}
+	
+	TalentsClassic() {
+		// Lets make sure that memory is zeroed out
+		for(int i = 0; i < NUMBER_OF_CLASSIC_TALENTS; i++) {
+			talent_amounts[i] = 0;
+		}
+	}
+};

@@ -7,9 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3BA5731C2404B90B00718CAE /* Actor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3BA5731A2404B90B00718CAE /* Actor.cpp */; };
+		3BA5731F2405CF3600718CAE /* Talents.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3BA5731D2405CF3600718CAE /* Talents.cpp */; };
+		3BA573222409C59A00718CAE /* Enemy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3BA573202409C59A00718CAE /* Enemy.cpp */; };
+		3BA5732524105A5C00718CAE /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3BA5732324105A5C00718CAE /* Scene.cpp */; };
+		3BA5732824105C0500718CAE /* DamageBreakdown.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3BA5732624105C0500718CAE /* DamageBreakdown.cpp */; };
+		3BA5732B2412B74E00718CAE /* EventState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3BA573292412B74E00718CAE /* EventState.cpp */; };
 		3BC9E02024006FD90044FBF9 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3BC9E01F24006FD90044FBF9 /* main.cpp */; };
 		3BC9E028240082150044FBF9 /* Engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3BC9E026240082150044FBF9 /* Engine.cpp */; };
 		3BC9E02B240084B60044FBF9 /* Resources.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3BC9E029240084B60044FBF9 /* Resources.cpp */; };
+		3BF14CD62404B16900F7E512 /* Actions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3BF14CD42404B16900F7E512 /* Actions.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,12 +32,26 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3BA5731A2404B90B00718CAE /* Actor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Actor.cpp; sourceTree = "<group>"; };
+		3BA5731B2404B90B00718CAE /* Actor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Actor.hpp; sourceTree = "<group>"; };
+		3BA5731D2405CF3600718CAE /* Talents.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Talents.cpp; sourceTree = "<group>"; };
+		3BA5731E2405CF3600718CAE /* Talents.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Talents.hpp; sourceTree = "<group>"; };
+		3BA573202409C59A00718CAE /* Enemy.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Enemy.cpp; sourceTree = "<group>"; };
+		3BA573212409C59A00718CAE /* Enemy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Enemy.hpp; sourceTree = "<group>"; };
+		3BA5732324105A5C00718CAE /* Scene.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Scene.cpp; sourceTree = "<group>"; };
+		3BA5732424105A5C00718CAE /* Scene.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Scene.hpp; sourceTree = "<group>"; };
+		3BA5732624105C0500718CAE /* DamageBreakdown.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DamageBreakdown.cpp; sourceTree = "<group>"; };
+		3BA5732724105C0500718CAE /* DamageBreakdown.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DamageBreakdown.hpp; sourceTree = "<group>"; };
+		3BA573292412B74E00718CAE /* EventState.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EventState.cpp; sourceTree = "<group>"; };
+		3BA5732A2412B74E00718CAE /* EventState.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = EventState.hpp; sourceTree = "<group>"; };
 		3BC9E01C24006FD90044FBF9 /* Darkmantle */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Darkmantle; sourceTree = BUILT_PRODUCTS_DIR; };
 		3BC9E01F24006FD90044FBF9 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		3BC9E026240082150044FBF9 /* Engine.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Engine.cpp; sourceTree = "<group>"; };
 		3BC9E027240082150044FBF9 /* Engine.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Engine.hpp; sourceTree = "<group>"; };
 		3BC9E029240084B60044FBF9 /* Resources.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Resources.cpp; sourceTree = "<group>"; };
 		3BC9E02A240084B60044FBF9 /* Resources.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Resources.hpp; sourceTree = "<group>"; };
+		3BF14CD42404B16900F7E512 /* Actions.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Actions.cpp; sourceTree = "<group>"; };
+		3BF14CD52404B16900F7E512 /* Actions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Actions.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +89,20 @@
 				3BC9E027240082150044FBF9 /* Engine.hpp */,
 				3BC9E029240084B60044FBF9 /* Resources.cpp */,
 				3BC9E02A240084B60044FBF9 /* Resources.hpp */,
+				3BF14CD42404B16900F7E512 /* Actions.cpp */,
+				3BF14CD52404B16900F7E512 /* Actions.hpp */,
+				3BA5731A2404B90B00718CAE /* Actor.cpp */,
+				3BA5731B2404B90B00718CAE /* Actor.hpp */,
+				3BA5731D2405CF3600718CAE /* Talents.cpp */,
+				3BA5731E2405CF3600718CAE /* Talents.hpp */,
+				3BA573202409C59A00718CAE /* Enemy.cpp */,
+				3BA573212409C59A00718CAE /* Enemy.hpp */,
+				3BA5732324105A5C00718CAE /* Scene.cpp */,
+				3BA5732424105A5C00718CAE /* Scene.hpp */,
+				3BA5732624105C0500718CAE /* DamageBreakdown.cpp */,
+				3BA5732724105C0500718CAE /* DamageBreakdown.hpp */,
+				3BA573292412B74E00718CAE /* EventState.cpp */,
+				3BA5732A2412B74E00718CAE /* EventState.hpp */,
 			);
 			path = Darkmantle;
 			sourceTree = "<group>";
@@ -129,9 +164,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3BA5732B2412B74E00718CAE /* EventState.cpp in Sources */,
+				3BA5732524105A5C00718CAE /* Scene.cpp in Sources */,
+				3BA5732824105C0500718CAE /* DamageBreakdown.cpp in Sources */,
 				3BC9E02B240084B60044FBF9 /* Resources.cpp in Sources */,
+				3BF14CD62404B16900F7E512 /* Actions.cpp in Sources */,
+				3BA573222409C59A00718CAE /* Enemy.cpp in Sources */,
 				3BC9E02024006FD90044FBF9 /* main.cpp in Sources */,
+				3BA5731F2405CF3600718CAE /* Talents.cpp in Sources */,
 				3BC9E028240082150044FBF9 /* Engine.cpp in Sources */,
+				3BA5731C2404B90B00718CAE /* Actor.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

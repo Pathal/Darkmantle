@@ -8,14 +8,13 @@
 Engine::Engine() {
     recycled_eventstates = nullptr;
     recycled_timelineevents = nullptr;
+	recycled_actorstates = nullptr;
 	
-	resource_lower[PRIMARY_RESOURCE]   = 0;
-	resource_lower[SECONDARY_RESOURCE] = 0;
-	resource_lower[TERTIARY_RESOURCE]  = 0;
+	target = nullptr;
 	
-	resource_upper[PRIMARY_RESOURCE]   = 100;
-	resource_upper[SECONDARY_RESOURCE] = 5;
-	resource_upper[TERTIARY_RESOURCE]  = 100;
+	//std::thread eventstate_allocator(    &Engine::EventStateAllocator,	this);
+	//std::thread timelineevent_allocator( &Engine::TimelineEventAllocator,	this);
+	//std::thread actorstate_allocator(    &Engine::ActorStateAllocator,	this);
 }
 
 Engine::~Engine() {
@@ -29,6 +28,22 @@ Engine::~Engine() {
         recycled_timelineevents = recycled_timelineevents->next;
         delete pop;
     }
+	while (recycled_actorstates) {
+        ActorState* pop = recycled_actorstates;
+        recycled_actorstates = recycled_actorstates->next;
+        delete pop;
+    }
+}
+
+// Recycling allocators, constantly running in the background
+void Engine::EventStateAllocator(Engine * e) {
+	// while true, keep scanning for 
+}
+void Engine::TimelineEventAllocator(Engine * e) {
+	//
+}
+void Engine::ActorStateAllocator(Engine * e) {
+	//
 }
 
 Engine* Engine::getInstance() {
@@ -43,6 +58,9 @@ bool Engine::ReserveEvents(int num) {
     if(!states) {
        return false; // There was a memory allocation failure!
     }
+	
+	mutex_eventstate.lock();
+	eventstate_pool_size += num;
     // shuffle the array into the linked list
     for(int i = 0; i < num; i++) {
        // recycled_states;
@@ -50,18 +68,23 @@ bool Engine::ReserveEvents(int num) {
        recycled_eventstates = &(states[i]);
     }
     eventstate_batches.push_back(states);
-    return true;
+	mutex_eventstate.unlock();
+
+	return true;
 }
 
 EventState* Engine::PullEvent(EventState * e) {
     EventState* node = nullptr;
-	if(recycled_eventstates){
-		node = recycled_eventstates;
-		recycled_eventstates = node->next;
-	} else {
-		node = new EventState;
+	if(!recycled_eventstates) {
+		ReserveEvents(EVENTSTATE_RESERVE_SIZE);
 	}
-	
+
+	mutex_eventstate.lock();
+	eventstate_pool_size--;
+	node = recycled_eventstates;
+	recycled_eventstates = node->next;
+	mutex_eventstate.unlock();
+
 	if (e){
 		// copy the data over
 		e->breakdown.CopyTo(node->breakdown);
@@ -73,6 +96,7 @@ EventState* Engine::PullEvent(EventState * e) {
 		node->parent = nullptr;
 		node->timeline = nullptr;
 	}
+	node->final_breakdown.ResetBreakdown();
 	node->children.clear();
 	node->percentage = 1.0f;
 	node->current_child = 0;
@@ -107,8 +131,8 @@ EventState* Engine::GetNextChild(EventState * e) {
 
 void Engine::SendDataToParent(EventState * e) {
 	for(int i = 0; i < NUMBER_OF_ACTIONS; i++) {
-		float val = e->breakdown.damages.at(i) * e->percentage;
-		e->parent->breakdown.AddDamage(val, i);
+		float val = e->final_breakdown.damages.at(i) * e->percentage;
+		e->parent->final_breakdown.AddDamage(val, i);
 	}
     return;
 }
@@ -118,14 +142,37 @@ void Engine::RecycleNode(EventState * e) {
 	recycled_eventstates = e;
 }
 
+bool Engine::ReserveTimelineEvents(int num) {
+    TimelineEvent * states = new TimelineEvent[num];
+    if(!states) {
+       return false; // There was a memory allocation failure!
+    }
+	
+	mutex_timeline.lock();
+	timelineevent_pool_size += num;
+    // shuffle the array into the linked list
+    for(int i = 0; i < num; i++) {
+       // recycled_states;
+       states[i].next = recycled_timelineevents;
+       recycled_timelineevents = &(states[i]);
+    }
+    timelineevent_batches.push_back(states);
+	mutex_timeline.unlock();
+
+	return true;
+}
+
 TimelineEvent* Engine::PullTimelineEvent(TimelineEvent * e) {
 	TimelineEvent* node = nullptr;
-	if(recycled_timelineevents){
-		node = recycled_timelineevents;
-		recycled_timelineevents = node->next;
-	} else {
-		node = new TimelineEvent;
+	if(!recycled_timelineevents){
+		ReserveTimelineEvents(EVENTSTATE_RESERVE_SIZE);
 	}
+	
+	mutex_timeline.lock();
+	timelineevent_pool_size--;
+	node = recycled_timelineevents;
+	recycled_timelineevents = node->next;
+	mutex_timeline.unlock();
 	
 	// if we were passed a node, we copy from it
 	if (e){
@@ -237,19 +284,26 @@ bool Engine::ProcessNode(EventState * event) {
 		return false;
 	}
 	
+	// this function copies data to the return breakdown that gets passed
+	// upward to the parent, should be checked last
+	if(config.IsOver(event)) {
+		// well we're done, so copy the breakdown to the final breakdown
+		// for "send to parent"
+		event->breakdown.CopyTo(event->final_breakdown);
+		return true;
+	}
+	
 	if(event->processed) {
 		// we already populated children and distributed effects, just return
 		return true;
 	}
 	
-	if(config.IsOver(event)) {
-		//We're actually done with the branch, we've hit an end condition
-		return true;
-	}
 	
+	// copy timeline event data into the event state
 	TimelineEvent * task = event->timeline;
 	event->time = task->time;
 	event->timeline = task->next;
+	event->value = task->value;
 	if(!actions.at(task->act)->Execute(event)) {
 		// Something went wrong while executing the attack
 		// this is probably due to some desynchronized pointer
@@ -273,12 +327,16 @@ void Engine::Run(TimelineEvent * e) {
     long l = 0; // iteration number
     long max_iterations = LONG_MAX;
     while (l < max_iterations){
-		printf("\nCurrent node - iteration:%li - addr:%li\n", l, (long)current_node);
+		if(verbose){
+			printf("\nCurrent node - iteration:%li - addr:%li\n", l, (long)current_node);
+		}
         
         // try to populate the children nodes
         // ie, execute the behaviour
 		if(!current_node->processed) {
-			printf("Doing action %i at time %f\n", current_node->timeline->act, current_node->timeline->time);
+			if(verbose){
+				printf("Doing action %i at time %f\n", current_node->timeline->act, current_node->timeline->time);
+			}
 			if(!ProcessNode(current_node)){
 				// There was an error in the process!
 				// End the calculations to discourage problems.
@@ -294,10 +352,12 @@ void Engine::Run(TimelineEvent * e) {
             // if the parent is null, and no children left, we're done!
 			// we've finished the root node!
             if (current_node->parent == nullptr) {
-				current_node->breakdown.CopyTo(final_breakdown);
+				current_node->final_breakdown.CopyTo(final_breakdown);
+				final_breakdown.Print();
                 return;
             }
             
+			
             //send the data to the parent's final breakdown
             SendDataToParent(current_node);
             //set the parent as the current node
@@ -306,10 +366,11 @@ void Engine::Run(TimelineEvent * e) {
             //send the child we just left to the recycling bin
             RecycleNode(recyclable);
         }
+		
+		l++; // iteration increment
     }
 	
-	// We're done calculating. Congratulations!
-	
+	// Wait... we probably should have already returned.
 	return;
 }
 

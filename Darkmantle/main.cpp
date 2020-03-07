@@ -8,8 +8,10 @@
 #include <stdexcept>
 #include <vector>
 
-#include "Resources.hpp"
+#include "Actions.hpp"
+#include "Actor.hpp"
 #include "Engine.hpp"
+#include "Resources.hpp"
 
 
 int main(int argc, const char * argv[]) {
